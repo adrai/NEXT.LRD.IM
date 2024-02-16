@@ -14,12 +14,11 @@ const SwitchLanguages = () => {
     { id: "en", value: "English" },
   ];
 
-const changeLanguage = (lng) => {
+  const changeLanguage = (lng) => {
     i18n.changeLanguage(lng).then(() => {
         document.documentElement.lang = lng;
-        Cookie.set("NEXT_LOCALE", lng, { path: '/', sameSite: 'strict' });
+        localStorage.setItem("NEXT_LOCALE", lng);
         router.push(router.pathname, router.asPath, { shallow: true });
-        
     });
 };
 

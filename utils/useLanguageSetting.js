@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'next-i18next';
-import Cookie from 'js-cookie';
 import { useRouter } from 'next/router'; // 导入useRouter
 
 const useLanguageSetting = () => {
@@ -14,35 +13,34 @@ const useLanguageSetting = () => {
             console.log(`Resources reloaded for ${locale}`);
         });
         document.documentElement.lang = locale;
-        Cookie.set("NEXT_LOCALE", locale, { path: '/', sameSite: 'strict' }); // 更新Cookie
-        
+        localStorage.setItem("NEXT_LOCALE", locale); // 更新本地存储
       });
     };
 
     const handleRouteChange = () => {
-        // 尝试从Cookies获取用户设置的语言
-        const cookieLocale = Cookie.get("NEXT_LOCALE");
-        let finalLocale = cookieLocale || "en"; // 修改默认语言为英文
+      // 尝试从本地存储获取用户设置的语言
+      const localStorageLocale = localStorage.getItem("NEXT_LOCALE");
+      let finalLocale = localStorageLocale || "en"; // 修改默认语言为英文
       
-        if (!cookieLocale) {
-          let browserLanguage = navigator.language || navigator.userLanguage; // 兼容不同浏览器
-          // 对于以“zh”开头的语言进行特别处理
-          if (browserLanguage.startsWith("zh")) {
-            // 针对不同地区的中文设置不同的默认值
-            if (browserLanguage.toLowerCase().includes("cn") || browserLanguage.toLowerCase().includes("sg")) {
-              finalLocale = "zh-Hans"; // 简体中文
-            } else if (browserLanguage.toLowerCase().includes("tw") || browserLanguage.toLowerCase().includes("hk")) {
-              finalLocale = "zh-Hant"; // 繁体中文
-            } else {
-              // 如果无法明确判断为简体或繁体中文的其他情况，默认使用简体中文
-              finalLocale = "zh-Hans";
-            }
-          } // 如果不是以"zh"开头，则已经在初始设置中将finalLocale设为"en"
-        }
+      if (!localStorageLocale) {
+        let browserLanguage = navigator.language || navigator.userLanguage; // 兼容不同浏览器
+        // 对于以“zh”开头的语言进行特别处理
+        if (browserLanguage.startsWith("zh")) {
+          // 针对不同地区的中文设置不同的默认值
+          if (browserLanguage.toLowerCase().includes("cn") || browserLanguage.toLowerCase().includes("sg")) {
+            finalLocale = "zh-Hans"; // 简体中文
+          } else if (browserLanguage.toLowerCase().includes("tw") || browserLanguage.toLowerCase().includes("hk")) {
+            finalLocale = "zh-Hant"; // 繁体中文
+          } else {
+            // 如果无法明确判断为简体或繁体中文的其他情况，默认使用简体中文
+            finalLocale = "zh-Hans";
+          }
+        } // 如果不是以"zh"开头，则已经在初始设置中将finalLocale设为"en"
+      }
       
-        // 根据最终确定的Locale设置语言
-        setLanguage(finalLocale);
-      };
+      // 根据最终确定的Locale设置语言
+      setLanguage(finalLocale);
+    };
 
     // 监听路由变化
     router.events.on('routeChangeComplete', handleRouteChange);
@@ -60,4 +58,3 @@ const useLanguageSetting = () => {
 };
 
 export default useLanguageSetting;
-

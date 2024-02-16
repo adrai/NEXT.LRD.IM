@@ -45,8 +45,8 @@ export default function about() {
 
 export const getServerSideProps = async (context) => {
   const { locale } = context;
-  const cookies = parseCookies(context);
-  const userLocale = locale || cookies['NEXT_LOCALE'];
+  const localStorageLocale = typeof window !== 'undefined' ? localStorage.getItem("NEXT_LOCALE") : null;
+  const userLocale = locale || localStorageLocale;
 
   return {
     props: {
